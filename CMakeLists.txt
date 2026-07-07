@@ -18,17 +18,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_NO_PACKAGE_REGISTRY ON)
 
-# 直接使用仓库中自带的 BehaviorTree.CPP，空白环境无需预先安装。
-set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
-set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(BUILD_TOOLS OFF CACHE BOOL "" FORCE)
-set(BUILD_MANUAL_SELECTOR OFF CACHE BOOL "" FORCE)
-set(ENABLE_COROUTINES OFF CACHE BOOL "" FORCE)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+# 使用 thirdparty 中的 BehaviorTree.CPP 预编译库。
+set(BEHAVIORTREE_CPP_PREBUILT_ROOT
+    "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/BehaviorTree.CPP-3.8.7-prebuilt"
+    CACHE PATH "BehaviorTree.CPP 3.8.7 prebuilt directory")
 
-add_subdirectory(
-    "${CMAKE_CURRENT_SOURCE_DIR}/../BehaviorTree.CPP-3.8.7"
-    "${CMAKE_BINARY_DIR}/BehaviorTree.CPP"
-)
+if(NOT EXISTS "${BEHAVIORTREE_CPP_PREBUILT_ROOT}/lib/cmake/behaviortree_cpp_v3/behaviortree_cpp_v3Config.cmake")
+  message(FATAL_ERROR
+    "BehaviorTree.CPP prebuilt dependency is missing. Run:\n"
+    "  git submodule update --init --recursive\n"
+    "or put the prebuilt package under:\n"
+    "  ${BEHAVIORTREE_CPP_PREBUILT_ROOT}")
+endif()
+
+list(PREPEND CMAKE_PREFIX_PATH
+  "${BEHAVIORTREE_CPP_PREBUILT_ROOT}")
+
+find_package(behaviortree_cpp_v3 CONFIG REQUIRED)
+
+# 让 build 目录里的示例程序可以直接运行，不需要手动设置 LD_LIBRARY_PATH。
+set(CMAKE_BUILD_RPATH
+  "${BEHAVIORTREE_CPP_PREBUILT_ROOT}/lib")
 
 add_subdirectory(samples)

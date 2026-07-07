@@ -6,7 +6,7 @@ add_executable(my_first_bt
   main.cpp)
 
 target_link_libraries(my_first_bt
-  PRIVATE behaviortree_cpp_v3)
+  PRIVATE BT::behaviortree_cpp_v3)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(my_first_bt
