@@ -1,11 +1,24 @@
-# 从空白工程开始使用行为树
+# BehaviorTree.CPP 学习工程
 
-这个例子不依赖已有 FSM。行为树直接负责以下流程：
+这个目录模仿 `/home/js/cyclonedds/myproject` 的组织方式：
+
+- `samples/`：学习、实验、验证行为树概念；
+- `src/`：以后真正开发业务模块时再放；
+- `include/`：以后真正需要公共头文件时再放；
+- 顶层 `CMakeLists.txt`：只做工程配置、引入 BehaviorTree.CPP、加载 samples。
+
+当前学习代码在：
+
+```text
+samples/basic_bt/
+```
+
+它不依赖已有 FSM。行为树直接负责以下流程：
 
 1. 检查电量；
-2. 电量不足时充电；
-3. 前往目标点；
-4. 输出任务完成。
+2. 电量满足后前往目标点；
+3. 移动过程中模拟电量下降；
+4. `ReactiveSequence` 重新检查电量并中止移动。
 
 ## 构建运行
 
@@ -17,14 +30,17 @@ cd Demo/myproject
 cmake -S . -B build
 cmake --build build -j4
 cd build
-./my_first_bt
+./samples/basic_bt/my_first_bt
 ```
 
 ## 文件作用
 
-- `tree.xml`：描述“做什么、按什么顺序做”；
-- `main.cpp`：实现条件和动作节点，并提供实际数据；
+- `samples/basic_bt/tree.xml`：描述“做什么、按什么顺序做”；
+- `samples/basic_bt/main.cpp`：实现条件和动作节点，并提供实际数据；
 - Blackboard：保存并共享示例中的 `battery` 和 `target`。
+
+现在程序直接读取源码目录中的 `samples/basic_bt/tree.xml`。所以只改 XML 时，
+重新运行程序即可生效；只有改 C++ 时才需要重新编译。
 
 ## 空白项目需要准备什么
 

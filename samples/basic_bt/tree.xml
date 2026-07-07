@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <ReactiveSequence name="complete_one_task">
+
+    <BatteryOK battery="{battery}"/>
+
+    <MoveTo target="{target}" battery="{battery}"/>
+
+    <Say text="任务完成"/>
+
+    </ReactiveSequence>
+  </BehaviorTree>
+</root>

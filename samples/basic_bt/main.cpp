@@ -90,7 +90,10 @@ public:
 
     static BT::PortsList providedPorts()
     {
-        return { BT::InputPort<std::string>("target") };
+        return {
+            BT::InputPort<std::string>("target"),
+            BT::BidirectionalPort<int>("battery")
+        };
     }
 
     BT::NodeStatus onStart() override
@@ -109,7 +112,14 @@ public:
 
     BT::NodeStatus onRunning() override
     {
+        
         ++progress_;
+
+        if(progress_ == 2)
+        {
+            setOutput("battery", 20);
+            std::cout << "[移动] 模拟电量突然下降到 20%" << std::endl;
+        }
         std::cout << "[移动] 进度: " << progress_ << "/3" << std::endl;
         return progress_ >= 3 ? BT::NodeStatus::SUCCESS
                               : BT::NodeStatus::RUNNING;
@@ -158,7 +168,7 @@ int main()
     factory.registerNodeType<Say>("Say");
 
     auto blackboard = BT::Blackboard::create();
-    blackboard->set("battery", 20);
+    blackboard->set("battery", 80);
     blackboard->set("target", std::string("工作区 A"));
 
     auto tree = factory.createTreeFromFile(TREE_XML_PATH, blackboard);
@@ -167,6 +177,7 @@ int main()
     while(status == BT::NodeStatus::IDLE || status == BT::NodeStatus::RUNNING)
     {
         status = tree.tickRoot();
+        std::cout << "循环中" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
