@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root main_tree_to_execute="GraspTree">
+  <BehaviorTree ID="GraspTree">
+    <Sequence name="grasp_cloth_task">
+      <DetectCloth object="{object}"/>
+      <MoveToCloth target="{target}"/>
+      <CloseGripper/>
+    </Sequence>
+  </BehaviorTree>
+</root>

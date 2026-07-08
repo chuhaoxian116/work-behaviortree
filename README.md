@@ -18,6 +18,7 @@ samples/subtree_demo/
 samples/blackboard_scope/
 samples/engineering_layout/
 samples/plugin_nodes/
+samples/fsm_supervisor/
 ```
 
 `samples/basic_bt/` 不依赖已有 FSM。行为树直接负责以下流程：
@@ -76,6 +77,13 @@ samples/plugin_nodes/
 3. 主程序不 include 具体节点类；
 4. 主程序通过 `factory.registerFromPlugin()` 动态加载节点。
 
+`samples/fsm_supervisor/` 演示 FSM / Supervisor 如何控制多棵行为树：
+
+1. `IDLE` 状态等待外部命令，不 tick 任务树；
+2. `GRASPING` 状态周期性 tick `grasp_tree`；
+3. 硬件异常时 FSM 调用 `grasp_tree.haltTree()` 并进入 `ERROR`；
+4. `RECOVERING` 状态 tick `recover_tree`，恢复成功后回到 `IDLE`。
+
 ## 构建运行
 
 项目使用 `thirdparty/BehaviorTree.CPP-3.8.7-prebuilt` 中的预编译
@@ -93,6 +101,7 @@ cmake --build build -j4
 ./build/samples/blackboard_scope/blackboard_scope_bt
 ./build/samples/engineering_layout/engineering_layout_bt
 ./build/samples/plugin_nodes/plugin_nodes_bt
+./build/samples/fsm_supervisor/fsm_supervisor_bt
 ```
 
 ## 文件作用
@@ -111,6 +120,7 @@ cmake --build build -j4
 - `samples/blackboard_scope/main.cpp`：安全打印当前黑板和父树黑板里的真实值；
 - `samples/engineering_layout/`：演示节点声明/实现/注册/main 的工程化拆分；
 - `samples/plugin_nodes/`：演示节点 `.so` 插件和 `registerFromPlugin()`；
+- `samples/fsm_supervisor/`：演示 FSM 根据命令、硬件反馈和 BT 根节点状态切换大状态；
 - Blackboard：保存并共享示例中的 `battery` 和 `target`。
 
 现在程序直接读取源码目录中的 sample XML。所以只改 XML 时，
