@@ -14,6 +14,7 @@ samples/basic_bt/
 samples/async_action/
 samples/parallel_tasks/
 samples/retry_timeout/
+samples/subtree_demo/
 ```
 
 `samples/basic_bt/` 不依赖已有 FSM。行为树直接负责以下流程：
@@ -44,6 +45,13 @@ samples/retry_timeout/
 3. `Timeout` 给异步移动设置最大运行时间；
 4. 超时后 `Timeout` 会 halt 正在 `RUNNING` 的子节点并返回 `FAILURE`。
 
+`samples/subtree_demo/` 演示大树拆分：
+
+1. `MainTree` 只描述准备、导航、收尾三个阶段；
+2. `PrepareTask`、`NavigateTask`、`FinishTask` 分别描述细节；
+3. 普通 `SubTree` 会创建子黑板；
+4. 父树和子树之间通过显式 remap 传递输入/输出。
+
 ## 构建运行
 
 项目使用 `thirdparty/BehaviorTree.CPP-3.8.7-prebuilt` 中的预编译
@@ -57,6 +65,7 @@ cmake --build build -j4
 ./build/samples/async_action/async_action_bt
 ./build/samples/parallel_tasks/parallel_tasks_bt
 ./build/samples/retry_timeout/retry_timeout_bt
+./build/samples/subtree_demo/subtree_demo_bt
 ```
 
 ## 文件作用
@@ -69,6 +78,8 @@ cmake --build build -j4
 - `samples/parallel_tasks/main.cpp`：演示移动、视觉、机械臂三个 worker 同时工作；
 - `samples/retry_timeout/tree.xml`：演示 `RetryUntilSuccessful` 和 `Timeout`；
 - `samples/retry_timeout/main.cpp`：演示失败重试和超时取消；
+- `samples/subtree_demo/tree.xml`：演示 `MainTree` 如何调用多个 `SubTree`；
+- `samples/subtree_demo/main.cpp`：演示子树黑板 remap 和阶段拆分；
 - Blackboard：保存并共享示例中的 `battery` 和 `target`。
 
 现在程序直接读取源码目录中的 sample XML。所以只改 XML 时，

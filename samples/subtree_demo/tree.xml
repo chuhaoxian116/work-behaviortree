@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root main_tree_to_execute="MainTree">
+
+  <!--
+    主树只描述“大阶段”：
+      1. 准备
+      2. 导航
+      3. 收尾
+
+    细节放到下面的 PrepareTask / NavigateTask / FinishTask 子树里。
+  -->
+  <BehaviorTree ID="MainTree">
+    <Sequence name="main_task">
+
+      <!--
+        普通 SubTree 的端口映射写法：
+
+          子树内部 key = 父树 key
+
+        prep_battery="battery" 的意思是：
+          子树里的 {prep_battery} 映射到父树黑板里的 battery。
+
+        注意：这里不是 prep_battery="{battery}"。
+      -->
+      <SubTree ID="PrepareTask"
+               prep_battery="battery"
+               prep_message="prepare_message"/>
+      <Say text="{prepare_message}"/>
+
+      <SubTree ID="NavigateTask"
+               nav_target="target"
+               nav_result="nav_result"/>
+      <Say text="{nav_result}"/>
+
+      <SubTree ID="FinishTask"
+               finish_message="finish_message"/>
+      <Say text="{finish_message}"/>
+
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="PrepareTask">
+    <Sequence name="prepare_task">
+      <BatteryOK battery="{prep_battery}"/>
+      <SetBlackboard output_key="prep_message" value="准备阶段完成：电量满足要求"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="NavigateTask">
+    <Sequence name="navigate_task">
+      <Timeout msec="3000">
+        <MoveTo target="{nav_target}"/>
+      </Timeout>
+      <SetBlackboard output_key="nav_result" value="导航阶段完成：已经到达目标点"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="FinishTask">
+    <SetBlackboard output_key="finish_message" value="收尾阶段完成：任务结束"/>
+  </BehaviorTree>
+
+</root>
