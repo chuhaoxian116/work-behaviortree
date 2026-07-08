@@ -16,6 +16,7 @@ samples/parallel_tasks/
 samples/retry_timeout/
 samples/subtree_demo/
 samples/blackboard_scope/
+samples/engineering_layout/
 ```
 
 `samples/basic_bt/` 不依赖已有 FSM。行为树直接负责以下流程：
@@ -60,6 +61,13 @@ samples/blackboard_scope/
 3. 普通 `SubTree` 不 remap 时读不到父树变量，写入也留在子树黑板；
 4. `SubTreePlus __autoremap=true` 会自动映射同名 key。
 
+`samples/engineering_layout/` 演示 sample 内部的工程化拆分：
+
+1. 节点声明放在 sample 自己的 `include/`；
+2. 节点实现放在 sample 自己的 `src/`；
+3. 节点注册集中在 `register_nodes.cpp`；
+4. `main.cpp` 只负责注册、创建黑板、加载 XML 和 tick 行为树。
+
 ## 构建运行
 
 项目使用 `thirdparty/BehaviorTree.CPP-3.8.7-prebuilt` 中的预编译
@@ -75,6 +83,7 @@ cmake --build build -j4
 ./build/samples/retry_timeout/retry_timeout_bt
 ./build/samples/subtree_demo/subtree_demo_bt
 ./build/samples/blackboard_scope/blackboard_scope_bt
+./build/samples/engineering_layout/engineering_layout_bt
 ```
 
 ## 文件作用
@@ -91,6 +100,7 @@ cmake --build build -j4
 - `samples/subtree_demo/main.cpp`：演示子树黑板 remap 和阶段拆分；
 - `samples/blackboard_scope/tree.xml`：演示普通 `SubTree`、显式 remap、`SubTreePlus autoremap`；
 - `samples/blackboard_scope/main.cpp`：安全打印当前黑板和父树黑板里的真实值；
+- `samples/engineering_layout/`：演示节点声明/实现/注册/main 的工程化拆分；
 - Blackboard：保存并共享示例中的 `battery` 和 `target`。
 
 现在程序直接读取源码目录中的 sample XML。所以只改 XML 时，

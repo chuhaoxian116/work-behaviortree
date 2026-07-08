@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="engineering_layout_demo">
+      <BatteryOK battery="{battery}"/>
+      <MoveTo target="{target}"/>
+      <Say text="工程化拆分示例完成"/>
+    </Sequence>
+  </BehaviorTree>
+</root>
