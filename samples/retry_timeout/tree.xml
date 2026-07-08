@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="retry_timeout_demo">
+
+      <!--
+        RetryUntilSuccessful 是 Decorator。
+        它只包住一个子节点，并改变子节点的失败语义：
+        子节点失败后，最多重新 tick num_attempts 次。
+
+        子节点 FAILURE：
+            Retry 可以同一 tick 内继续重试
+
+        子节点 RUNNING：
+            Retry 停住，返回 RUNNING，等下一次 tickRoot
+
+        子节点 SUCCESS：
+            Retry 成功，返回 SUCCESS
+
+        本例中 FlakyDetectObject 前两次返回 FAILURE，第三次返回 SUCCESS。
+      -->
+      <RetryUntilSuccessful num_attempts="3">
+        <FlakyDetectObject object="{object}"/>
+      </RetryUntilSuccessful>
+
+      <RetryUntilSuccessful num_attempts="3">
+        <StatefulFlakyDetectObject object="{object}"/>
+      </RetryUntilSuccessful>
+
+      <!--
+        Timeout 也是 Decorator。
+        它只包住一个子节点，并给 RUNNING 子节点加一个最大运行时间。
+
+        本例中 SlowMoveTo 需要约 3 秒完成，但 Timeout 只给 1200ms。
+        超时后 Timeout 会 halt SlowMoveTo，并返回 FAILURE。
+        Timeout halt 子节点之后，这个子节点就不会再继续触发 onRunning()
+      -->
+      <Timeout msec="1200">
+        <SlowMoveTo target="{target}"/>
+      </Timeout>
+
+      <Say text="检测和移动全部完成"/>
+    </Sequence>
+  </BehaviorTree>
+</root>
