@@ -17,6 +17,7 @@ samples/retry_timeout/
 samples/subtree_demo/
 samples/blackboard_scope/
 samples/engineering_layout/
+samples/plugin_nodes/
 ```
 
 `samples/basic_bt/` 不依赖已有 FSM。行为树直接负责以下流程：
@@ -68,6 +69,13 @@ samples/engineering_layout/
 3. 节点注册集中在 `register_nodes.cpp`；
 4. `main.cpp` 只负责注册、创建黑板、加载 XML 和 tick 行为树。
 
+`samples/plugin_nodes/` 演示节点插件化：
+
+1. 节点编译成独立 `.so` 插件；
+2. 插件通过 `BT_REGISTER_NODES` 导出注册入口；
+3. 主程序不 include 具体节点类；
+4. 主程序通过 `factory.registerFromPlugin()` 动态加载节点。
+
 ## 构建运行
 
 项目使用 `thirdparty/BehaviorTree.CPP-3.8.7-prebuilt` 中的预编译
@@ -84,6 +92,7 @@ cmake --build build -j4
 ./build/samples/subtree_demo/subtree_demo_bt
 ./build/samples/blackboard_scope/blackboard_scope_bt
 ./build/samples/engineering_layout/engineering_layout_bt
+./build/samples/plugin_nodes/plugin_nodes_bt
 ```
 
 ## 文件作用
@@ -101,6 +110,7 @@ cmake --build build -j4
 - `samples/blackboard_scope/tree.xml`：演示普通 `SubTree`、显式 remap、`SubTreePlus autoremap`；
 - `samples/blackboard_scope/main.cpp`：安全打印当前黑板和父树黑板里的真实值；
 - `samples/engineering_layout/`：演示节点声明/实现/注册/main 的工程化拆分；
+- `samples/plugin_nodes/`：演示节点 `.so` 插件和 `registerFromPlugin()`；
 - Blackboard：保存并共享示例中的 `battery` 和 `target`。
 
 现在程序直接读取源码目录中的 sample XML。所以只改 XML 时，
