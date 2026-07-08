@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <!--
+      ReactiveSequence 每次 tick 都会先重新检查 BatteryOK。
+      如果移动过程中电量变低，BatteryOK 返回 FAILURE，
+      正在 RUNNING 的 AsyncMoveTo 会被 halt。
+    -->
+    <ReactiveSequence name="async_move_demo">
+      <BatteryOK battery="{battery}"/>
+      <AsyncMoveTo target="{target}"/>
+      <Say text="异步移动任务完成"/>
+    </ReactiveSequence>
+  </BehaviorTree>
+</root>

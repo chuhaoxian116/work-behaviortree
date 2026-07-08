@@ -11,35 +11,45 @@
 
 ```text
 samples/basic_bt/
+samples/async_action/
 ```
 
-它不依赖已有 FSM。行为树直接负责以下流程：
+`samples/basic_bt/` 不依赖已有 FSM。行为树直接负责以下流程：
 
 1. 检查电量；
 2. 电量满足后前往目标点；
 3. 移动过程中模拟电量下降；
 4. `ReactiveSequence` 重新检查电量并中止移动。
 
+`samples/async_action/` 演示真实工程里更常见的异步接入方式：
+
+1. `onStart()` 发起业务任务；
+2. 后台 worker 线程模拟耗时移动；
+3. `onRunning()` 非阻塞查询业务状态；
+4. `onHalted()` 向业务层发送取消请求。
+
 ## 构建运行
 
-项目直接引用相邻目录中的 `BehaviorTree.CPP-3.8.7`，不需要安装到
-`/usr/local`。
+项目使用 `thirdparty/BehaviorTree.CPP-3.8.7-prebuilt` 中的预编译
+BehaviorTree.CPP 动态库，不需要安装到 `/usr/local`。
 
 ```bash
 cd Demo/myproject
 cmake -S . -B build
 cmake --build build -j4
-cd build
-./samples/basic_bt/my_first_bt
+./build/samples/basic_bt/my_first_bt
+./build/samples/async_action/async_action_bt
 ```
 
 ## 文件作用
 
 - `samples/basic_bt/tree.xml`：描述“做什么、按什么顺序做”；
 - `samples/basic_bt/main.cpp`：实现条件和动作节点，并提供实际数据；
+- `samples/async_action/tree.xml`：演示反应式前置条件如何中止异步动作；
+- `samples/async_action/main.cpp`：演示行为树节点如何适配耗时业务接口；
 - Blackboard：保存并共享示例中的 `battery` 和 `target`。
 
-现在程序直接读取源码目录中的 `samples/basic_bt/tree.xml`。所以只改 XML 时，
+现在程序直接读取源码目录中的 sample XML。所以只改 XML 时，
 重新运行程序即可生效；只有改 C++ 时才需要重新编译。
 
 ## 空白项目需要准备什么
