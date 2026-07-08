@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="parallel_tasks_demo">
+      <BatteryOK battery="{battery}"/>
+
+      <!--
+        Parallel 不是自动开线程。
+        它会在每次 tick 中依次 tick 三个子节点。
+        真正的并发来自每个异步节点内部的 worker 线程。
+
+        success_threshold="-1":
+          -1 等价于“所有孩子数量”，也就是三个子节点全部 SUCCESS 后，
+          Parallel 才返回 SUCCESS。
+
+        failure_threshold="1":
+          任意一个子节点 FAILURE，Parallel 立即 FAILURE，并 halt 其它 RUNNING 子节点。
+      -->
+      <Parallel name="move_detect_prepare"
+                success_threshold="-1"
+                failure_threshold="1">
+        <AsyncMoveTo target="{target}"/>
+        <AsyncDetectObject object="{object}"/>
+        <AsyncPrepareArm/>
+      </Parallel>
+
+      <Say text="移动、视觉、机械臂准备全部完成"/>
+    </Sequence>
+  </BehaviorTree>
+</root>

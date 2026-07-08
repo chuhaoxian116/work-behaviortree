@@ -12,6 +12,7 @@
 ```text
 samples/basic_bt/
 samples/async_action/
+samples/parallel_tasks/
 ```
 
 `samples/basic_bt/` 不依赖已有 FSM。行为树直接负责以下流程：
@@ -28,6 +29,13 @@ samples/async_action/
 3. `onRunning()` 非阻塞查询业务状态；
 4. `onHalted()` 向业务层发送取消请求。
 
+`samples/parallel_tasks/` 演示多个异步业务同时被行为树编排：
+
+1. `Parallel` 同时推进移动、视觉、机械臂准备三个子节点；
+2. 每个子节点内部各自启动 worker 线程；
+3. `Parallel` 等三个任务全部成功后返回 `SUCCESS`；
+4. 任意任务失败时，`Parallel` 会 halt 其它仍在运行的任务。
+
 ## 构建运行
 
 项目使用 `thirdparty/BehaviorTree.CPP-3.8.7-prebuilt` 中的预编译
@@ -39,6 +47,7 @@ cmake -S . -B build
 cmake --build build -j4
 ./build/samples/basic_bt/my_first_bt
 ./build/samples/async_action/async_action_bt
+./build/samples/parallel_tasks/parallel_tasks_bt
 ```
 
 ## 文件作用
@@ -47,6 +56,8 @@ cmake --build build -j4
 - `samples/basic_bt/main.cpp`：实现条件和动作节点，并提供实际数据；
 - `samples/async_action/tree.xml`：演示反应式前置条件如何中止异步动作；
 - `samples/async_action/main.cpp`：演示行为树节点如何适配耗时业务接口；
+- `samples/parallel_tasks/tree.xml`：演示 `Parallel` 如何编排多个异步动作；
+- `samples/parallel_tasks/main.cpp`：演示移动、视觉、机械臂三个 worker 同时工作；
 - Blackboard：保存并共享示例中的 `battery` 和 `target`。
 
 现在程序直接读取源码目录中的 sample XML。所以只改 XML 时，
