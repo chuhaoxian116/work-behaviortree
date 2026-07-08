@@ -21,6 +21,9 @@
           子树里的 {prep_battery} 映射到父树黑板里的 battery。
 
         注意：这里不是 prep_battery="{battery}"。
+
+        子树内部用 `{}` 读写黑板值；
+        SubTree 调用处用不带 `{}` 的 key 名做 remap。
       -->
       <SubTree ID="PrepareTask"
                prep_battery="battery"
