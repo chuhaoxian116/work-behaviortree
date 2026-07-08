@@ -15,6 +15,7 @@ samples/async_action/
 samples/parallel_tasks/
 samples/retry_timeout/
 samples/subtree_demo/
+samples/blackboard_scope/
 ```
 
 `samples/basic_bt/` 不依赖已有 FSM。行为树直接负责以下流程：
@@ -52,6 +53,13 @@ samples/subtree_demo/
 3. 普通 `SubTree` 会创建子黑板；
 4. 父树和子树之间通过显式 remap 传递输入/输出。
 
+`samples/blackboard_scope/` 专门观察黑板作用域：
+
+1. 普通节点直接读取父树黑板；
+2. 普通 `SubTree` 通过显式 remap 读写父树变量；
+3. 普通 `SubTree` 不 remap 时读不到父树变量，写入也留在子树黑板；
+4. `SubTreePlus __autoremap=true` 会自动映射同名 key。
+
 ## 构建运行
 
 项目使用 `thirdparty/BehaviorTree.CPP-3.8.7-prebuilt` 中的预编译
@@ -66,6 +74,7 @@ cmake --build build -j4
 ./build/samples/parallel_tasks/parallel_tasks_bt
 ./build/samples/retry_timeout/retry_timeout_bt
 ./build/samples/subtree_demo/subtree_demo_bt
+./build/samples/blackboard_scope/blackboard_scope_bt
 ```
 
 ## 文件作用
@@ -80,6 +89,8 @@ cmake --build build -j4
 - `samples/retry_timeout/main.cpp`：演示失败重试和超时取消；
 - `samples/subtree_demo/tree.xml`：演示 `MainTree` 如何调用多个 `SubTree`；
 - `samples/subtree_demo/main.cpp`：演示子树黑板 remap 和阶段拆分；
+- `samples/blackboard_scope/tree.xml`：演示普通 `SubTree`、显式 remap、`SubTreePlus autoremap`；
+- `samples/blackboard_scope/main.cpp`：安全打印当前黑板和父树黑板里的真实值；
 - Blackboard：保存并共享示例中的 `battery` 和 `target`。
 
 现在程序直接读取源码目录中的 sample XML。所以只改 XML 时，

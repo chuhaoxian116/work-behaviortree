@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <Sequence name="blackboard_scope_demo">
+
+      <Say text="实验 1：普通节点直接读取父树黑板"/>
+      <TryReadString key="target"/>
+
+      <Say text="实验 2：普通 SubTree + 显式 remap，推荐工程写法"/>
+      <!--
+        普通 SubTree 的 remap 写法：
+
+          子树内部 key = 父树 key
+
+        child_target="target":
+          子树里的 child_target 映射到父树 target。
+
+        child_result="explicit_result":
+          子树里的 child_result 映射到父树 explicit_result。
+      -->
+      <SubTree ID="ExplicitRemapSubtree"
+               child_target="target"
+               child_result="explicit_result"/>
+      <TryReadString key="explicit_result"/>
+
+
+      <Say text="实验 3：普通 SubTree 不 remap，子树默认读不到父树变量"/>
+      <SubTree ID="NoRemapSubtree"/>
+
+
+      <Say text="实验 4：SubTreePlus + __autoremap，同名 key 自动映射"/>
+      <!--
+        SubTreePlus 的 __autoremap=true 会启用同名 key 自动映射。
+        子树里读取 target，会自动映射到父树 target。
+        子树里写 auto_result，会自动映射到父树 auto_result。
+
+        重要任务显式 remap
+        工具型子树可以 autoremap
+      -->
+      <SubTreePlus ID="AutoRemapSubtree" __autoremap="true"/>
+      <TryReadString key="auto_result"/>
+
+      <Say text="blackboard_scope 实验结束"/>
+
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="ExplicitRemapSubtree">
+    <Sequence name="explicit_remap_subtree">
+      <Say text="进入 ExplicitRemapSubtree"/>
+      <TryReadString key="child_target"/>
+      <SetBlackboard output_key="child_result" value="显式 remap：子树写回父树成功child_result"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="NoRemapSubtree">
+    <Sequence name="no_remap_subtree">
+      <Say text="进入 NoRemapSubtree"/>
+      <TryReadString key="target"/>
+      <SetBlackboard output_key="local_only_result" value="不 remap：这个值只写在子树黑板"/>
+      <TryReadString key="local_only_result"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="AutoRemapSubtree">
+    <Sequence name="auto_remap_subtree">
+      <Say text="进入 AutoRemapSubtree"/>
+      <TryReadString key="target"/>
+      <SetBlackboard output_key="auto_result" value="SubTreePlus autoremap：同名 key 写回父树成功"/>
+    </Sequence>
+  </BehaviorTree>
+
+</root>
